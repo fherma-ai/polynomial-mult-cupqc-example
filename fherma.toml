@@ -1,0 +1,23 @@
+kind = "solution"
+spec = "polynomial-multiplication/negacyclic@1.0.0"
+fingerprint = "sha256:e4000ee01ca295cf"
+
+# Where your three functions are. The platform generated the loop that calls
+# them; these names tell it which symbols to bind.
+[entry]
+init = "fherma_init"
+run  = "fherma_run"
+free = "fherma_free"
+
+# Built inside the challenge image (fherma/cupqc), which provides CUDA 12.8 and
+# the cuPQC SDK. The default C++ build is a plain cmake that would not link
+# cuPQC, so the build is stated here: nvcc, with the SDK on the include and
+# library paths, and -dlto because the BigInt implementation ships as device-LTO
+# objects. sm_89 is the L40S the runner carries; add -gencode targets for other
+# cards. CUPQC_SDK_DIR is set by the image.
+[build]
+command = "nvcc -std=c++17 -O3 -dlto -arch=sm_89 -I${CUPQC_SDK_DIR}/include -I${CUPQC_SDK_DIR}/include/cupqc main.cpp solve.cu -L${CUPQC_SDK_DIR}/lib -lcupqc-bigint -o solution"
+
+[runtime]
+language = "cpp"
+run = "./solution"

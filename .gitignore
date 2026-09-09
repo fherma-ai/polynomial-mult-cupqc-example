@@ -1,0 +1,15 @@
+# build output
+solution
+build/
+
+# local test points made by oracle.py
+pt/
+pt_*/
+
+# python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+._*
