@@ -47,20 +47,23 @@ shipped library instantiates; `L = 28` covers the challenge point (`W = 868`).
 ## Build and run
 
 Everything runs inside the challenge image, `fherma/cupqc`, which provides CUDA
-12.8 and the cuPQC SDK. The BigInt implementation ships as device-LTO objects,
-so the device code is compiled and linked with `-dlto`.
+12.8 and the cuPQC SDK. `CMakeLists.txt` enables the CUDA language, links cuPQC
+BigInt, and builds the device code with `-dlto` (the BigInt implementation ships
+as device-LTO objects).
 
 ```shell
 # build (also stated in fherma.toml)
-nvcc -std=c++17 -O3 -dlto -arch=sm_89 \
-  -I${CUPQC_SDK_DIR}/include -I${CUPQC_SDK_DIR}/include/cupqc \
-  main.cpp solve.cu -L${CUPQC_SDK_DIR}/lib -lcupqc-bigint -o solution
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
 
 # make a case, answer it, check it — with the standalone oracle
 python3 oracle.py make ./pt 1024 128 1
-./solution ./pt
+./build/solution ./pt
 python3 oracle.py verify ./pt
 ```
+
+`CMakeLists.txt` targets sm_89 (the L40S). Build for another card with
+`-DFHERMA_CUDA_ARCH=sm_90`.
 
 `oracle.py` derives `q` the way the specification does — the largest prime below
 `2^W` with `q ≡ 1 (mod 2N)` — generates random operands, and checks the GPU
