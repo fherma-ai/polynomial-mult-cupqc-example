@@ -1,14 +1,14 @@
 # Negacyclic polynomial multiplication with NVIDIA cuPQC — baseline
 
-An answer to the FHERMA specification
+An implementation of the FHERMA specification
 `polynomial-multiplication/negacyclic@1.0.0`: multiplication in
 `Z_q[X]/(X^N + 1)` with wide integer coefficients, operands in coefficient
 form and the u32-limb layout of NVIDIA cuPQC BigInt.
 
-This is a **correctness baseline, not a fast answer**. It is a schoolbook
+This is a **correctness baseline, not a fast implementation**. It is a schoolbook
 `O(N^2)` convolution — one CUDA thread per output coefficient — written to show
 the interface and the cuPQC BigInt arithmetic working end to end on the GPU. A
-competitive answer would use an NTT; this one exists to be read and to be
+competitive implementation would use an NTT; this one exists to be read and to be
 correct.
 
 ## The computation
@@ -35,7 +35,7 @@ shipped library instantiates; `L = 28` covers the challenge point (`W = 868`).
 
 | File | What it is |
 |---|---|
-| `solve.cu` | the answer — `fherma_init`, `fherma_run`, `fherma_free` |
+| `solve.cu` | the implementation — `fherma_init`, `fherma_run`, `fherma_free` |
 | `main.cpp` | generated harness: reads a point, times only `run`, writes results |
 | `fherma.h` | generated types from the signature |
 | `fherma.toml` | spec reference and the build/run commands |
@@ -56,7 +56,7 @@ as device-LTO objects).
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 
-# make a case, answer it, check it — with the standalone oracle
+# make a case, solve it, check it — with the standalone oracle
 python3 oracle.py make ./pt 1024 128 1
 ./build/solution ./pt
 python3 oracle.py verify ./pt
@@ -96,4 +96,4 @@ Measured by FHERMA on the L40S runner against the specification's own bundle
 
 The ~1 s is the schoolbook `O(N^2)` cost — correct, not fast. 100% GPU
 utilisation at ~1% memory-controller utilisation confirms it is compute-bound on
-the wide-integer arithmetic; an NTT answer would be orders of magnitude faster.
+the wide-integer arithmetic; an NTT implementation would be orders of magnitude faster.
