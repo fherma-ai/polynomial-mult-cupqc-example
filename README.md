@@ -84,3 +84,16 @@ Built and run on an NVIDIA L40S (sm_89) inside `fherma/cupqc:0.6.0`, checked by
 
 Each used a full-width prime modulus (top bit set), so carry handling in
 `add_mod` / `sub_mod` is exercised.
+
+## On the platform
+
+Measured by FHERMA on the L40S runner against the specification's own bundle
+(NTT oracle, exact verifier), at the challenge point:
+
+| point | seeds | result | median | GPU |
+|---|---|---|---|---|
+| N=32768, W=868 | 3/3 | exact | 1.066 s | 449 MB · 255.8 W · 100% util |
+
+The ~1 s is the schoolbook `O(N^2)` cost — correct, not fast. 100% GPU
+utilisation at ~1% memory-controller utilisation confirms it is compute-bound on
+the wide-integer arithmetic; an NTT answer would be orders of magnitude faster.
