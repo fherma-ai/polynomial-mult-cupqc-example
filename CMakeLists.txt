@@ -15,11 +15,15 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# The GPU architecture to build for: the L40S the runner carries is sm_89.
-# Override with -DFHERMA_CUDA_ARCH=... for another card. CMake's own
-# CMAKE_CUDA_ARCHITECTURES is left OFF because it emits -gencode, which nvcc
-# refuses alongside -dlto; the architecture is passed as -arch= instead.
-set(FHERMA_CUDA_ARCH sm_89 CACHE STRING "nvcc -arch value")
+# The GPU architecture to build for: the card the build can see. The platform
+# builds a solution on the machine that measures it, with the GPU visible, so
+# `native` compiles for an L40S (sm_89) there and for an RTX PRO 6000
+# (sm_120) here — where a fixed sm_89 with device LTO shipped no PTX and had
+# no kernel to run. Override with -DFHERMA_CUDA_ARCH=sm_89 to build for a card
+# that is not present. CMake's own CMAKE_CUDA_ARCHITECTURES is left OFF because
+# it emits -gencode, which nvcc refuses alongside -dlto; the architecture is
+# passed as -arch= instead.
+set(FHERMA_CUDA_ARCH native CACHE STRING "nvcc -arch value")
 
 # CUPQC_SDK_DIR is set by the image; fall back to the default install location.
 if(DEFINED ENV{CUPQC_SDK_DIR})
